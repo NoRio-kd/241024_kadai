@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>myMemoPad</title>
+<script src="js/jquery-2.1.3.min.js"></script>
+<link rel="stylesheet" href="css/sample.css">
+</head>
+<body>
+<header>
+<h1>MemoPad</h1>
+</header>
+<main style="display: none">
+    <input id="key" type="text">
+    <textarea id="text_area"></textarea>
+    <ul>
+        <li id="save">Save</li>
+        <li id="clear">Clear</li>
+    </ul>
+</main>
+<table id="list">
+<!-- ここに追加データが挿入される -->
+</table>
+<script>
+// key, memo, save, clear
+// セレクタ⇨メソッド⇨イベント 何に対して⇨どのようなことを⇨どのタイミングで
+// $("#email").html("htmlや文字列")
+// $("#email").on("click",function(){ 
+//     $("#email").html("htmlや文字列");
+// })
+
+$("main").slideDown(1000);
+//1.Save クリックイベント
+$("#save").on("click",function(){
+    const key= $("#key").val();            //id"key"から値を取得　valはvalueの意味。👀htmlだと取れないから注意
+    const value= $("#text_area").val();      //id"memo"から値を取得　valはvalueの意味。👀htmlだと取れないから注意
+    localStorage.setItem(key,value);    //keyとvalue
+    const html ='<tr><td>'+key+'</td><td>'+value+'</td><td><li class="delete" data-value='+key+' onclick="lidelete(this)">削除</li></td></tr>';  //listのclass deletでやる。inputとかはvalue属性を付与できなかった。呪文「シングル2回プラス2回」 
+    $("#list").append(html);            //lineみたいに前のデータを残して差し込んでいくイメージ
+    $("#key").val("");  //入力してるところをからにする
+    $("#text_area").val(""); //入力してるところをからにする
+    alert("Saved")
+});
+
+
+//2.clear クリックイベント
+$("#clear").on("click",function(){
+    // localStorage.clear();   //全消し
+    const checkbox =  $("#key").val();
+    localStorage.removeItem(); //一列消し。ここ空白であってるよね。
+    // console.log(checkbox);
+    
+    // $('#list').empty();     //#listの中だけ削除 
+    $("#text_area").val("削除済み");   //本来は""にして空にする
+    alert("Deleted");
+});
+
+// $(document).on("click",".delete",function(){
+//     const listvalue = $(".delete");
+//     // const delete =
+//     console.log(listvalue)
+   
+// });
+
+function lidelete(el){
+    const out_value = $(el).data('value');  //data-valueを撮ってくる
+    console.log(out_value)
+    localStorage.removeItem(out_value); //一列消し
+    console.log("aa");
+    // $('#list').empty();     //#listの中だけ削除 
+    $("#text_area").val("削除済み");   //本来は""にして空にする
+    alert("Deleted");
+    $('#list').empty();     //全体削除
+    for(let i = 0; i<localStorage.length; i++){     //for文で削除したい場所以外を再表示する。
+    const key = localStorage.key(i);
+    const value = localStorage.getItem(key);
+    const html = '<tr><th>'+key+'</th><td>'+value+'</td><td><li class="delete" data-value='+key+' onclick="lidelete(this)">削除</li></td></tr>';
+    $("#list").append(html);
+}
+}
+
+
+// //2.clear クリックイベント
+// $(".delete").on("click",function(){
+//     // const key= $("#key").val();   
+//     // localStorage.clear();   //全消し
+//     // localStorage.removeItem(key,); //一列消し
+//     console.log("aa");
+    
+//     // $('#list').empty();     //#listの中だけ削除 
+//     $("#text_area").val("削除済み");   //本来は""にして空にする
+//     alert("Deleted");
+// });
+
+
+
+//3.ページ読み込み：保存データ取得表示
+for(let i = 0; i<localStorage.length; i++){
+    const key = localStorage.key(i);
+    const value = localStorage.getItem(key);
+    const html = '<tr><th>'+key+'</th><td>'+value+'</td><td><li class="delete" data-value='+key+' onclick="lidelete(this)">削除</li></td></tr>';
+    $("#list").append(html);
+}
+
+
+
+
+</script>
+<footer><small>G's</small></footer>
+</body>
+</html>
